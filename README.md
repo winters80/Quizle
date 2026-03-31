@@ -1,2 +1,0 @@
-# Quizle
-Quizle
