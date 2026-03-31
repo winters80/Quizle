@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Night — Game</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="page">
+
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <a href="index.html" class="navbar-brand">&#9733; Quiz Night</a>
+        <div class="navbar-user">
+          <span class="navbar-handle" id="nav-handle"></span>
+          <button class="btn btn-secondary btn-sm" id="btn-leave">Leave Game</button>
+        </div>
+      </div>
+    </nav>
+
+    <main style="flex:1; padding: 1.5rem 0;">
+      <div class="container" style="max-width:700px;">
+
+        <!-- ========== LOBBY ========== -->
+        <div class="screen active" id="screen-lobby">
+          <div class="card card-glow mb-md fade-in">
+            <div class="text-center mb-lg">
+              <p class="text-muted mb-sm" style="font-size:0.875rem; text-transform:uppercase; letter-spacing:1px;">Room Code</p>
+              <div class="game-code" id="lobby-code">------</div>
+              <p class="text-dim mt-sm" style="font-size:0.8rem;">Share this code with your friends</p>
+            </div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.75rem; text-align:center; padding: 1rem 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin-bottom:1rem;">
+              <div>
+                <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Questions</div>
+                <div style="font-weight:700; font-size:1.1rem;" id="lobby-numq">—</div>
+              </div>
+              <div>
+                <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Timer</div>
+                <div style="font-weight:700; font-size:1.1rem;" id="lobby-timer">—</div>
+              </div>
+              <div>
+                <div class="text-muted" style="font-size:0.75rem; text-transform:uppercase;">Difficulty</div>
+                <div style="font-weight:700; font-size:1.1rem;" id="lobby-diff">—</div>
+              </div>
+            </div>
+
+            <!-- Players -->
+            <h3 class="mb-sm">Players <span id="player-count" class="text-muted" style="font-size:0.875rem;"></span></h3>
+            <div class="player-list" id="lobby-players"></div>
+          </div>
+
+          <!-- Host controls -->
+          <div id="host-controls" class="hidden">
+            <button class="btn btn-success btn-block btn-lg" id="btn-start">
+              &#9654; Start Game
+            </button>
+            <p class="text-dim text-center mt-sm" style="font-size:0.8rem;">You're the host. Start when everyone has joined.</p>
+          </div>
+
+          <!-- Guest waiting -->
+          <div id="guest-waiting">
+            <div class="alert alert-info">Waiting for the host to start the game...</div>
+          </div>
+        </div>
+
+        <!-- ========== COUNTDOWN ========== -->
+        <div class="screen" id="screen-countdown">
+          <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:50vh; gap:1rem;">
+            <p class="text-muted" style="text-transform:uppercase; letter-spacing:2px;">Get Ready!</p>
+            <div class="countdown-display" id="countdown-number">3</div>
+          </div>
+        </div>
+
+        <!-- ========== QUESTION ========== -->
+        <div class="screen" id="screen-question">
+          <!-- Top bar: progress + timer -->
+          <div class="flex items-center justify-between mb-md gap-md">
+            <div style="flex:1;">
+              <div class="question-category-bar">
+                <span class="question-number" id="q-progress">Question 1 of 15</span>
+                <span id="q-category-badge"></span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" id="q-progress-bar" style="width:0%"></div>
+              </div>
+            </div>
+            <div class="timer-ring" id="timer-ring">
+              <svg width="80" height="80" viewBox="0 0 80 80">
+                <circle cx="40" cy="40" r="34" fill="none" stroke="var(--border)" stroke-width="6"/>
+                <circle id="timer-circle" cx="40" cy="40" r="34" fill="none"
+                  stroke="var(--success)" stroke-width="6"
+                  stroke-dasharray="213.6" stroke-dashoffset="0"
+                  stroke-linecap="round"/>
+              </svg>
+              <div class="timer-number" id="timer-display">—</div>
+            </div>
+          </div>
+
+          <!-- Question card -->
+          <div class="card mb-md fade-in" id="question-card">
+            <div class="question-text" id="question-text">Loading...</div>
+          </div>
+
+          <!-- Answer buttons -->
+          <div class="answer-grid" id="answer-grid"></div>
+
+          <!-- Skip vote bar (vote mode only) -->
+          <div id="skip-bar-container" class="mt-md hidden">
+            <div class="skip-bar">
+              <div class="skip-dots" id="skip-dots"></div>
+              <span id="skip-vote-text">0 votes to skip</span>
+              <button class="btn btn-secondary btn-sm" id="btn-skip-vote" style="margin-left:auto;">Skip</button>
+            </div>
+          </div>
+
+          <!-- Individual skip (all modes) -->
+          <div class="mt-md" id="individual-skip-container">
+            <button class="btn btn-secondary btn-sm" id="btn-skip-individual">
+              Pass this question
+            </button>
+          </div>
+
+          <!-- Other players' status -->
+          <div class="card card-sm mt-md" style="background: var(--surface);">
+            <h3 class="mb-sm" style="font-size:0.875rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Players</h3>
+            <div class="player-list" id="question-players"></div>
+          </div>
+        </div>
+
+        <!-- ========== REVEAL ========== -->
+        <div class="screen" id="screen-reveal">
+          <div class="card card-glow mb-md fade-in">
+            <div class="question-category-bar">
+              <span class="question-number" id="reveal-progress">Question 1 of 15</span>
+              <span id="reveal-result-badge"></span>
+            </div>
+            <div class="question-text mb-md" id="reveal-question"></div>
+            <div class="answer-grid" id="reveal-answer-grid"></div>
+          </div>
+
+          <!-- Scores this round -->
+          <div class="card card-sm mb-md" style="background: var(--surface);">
+            <h3 class="mb-sm" style="font-size:0.875rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Round Scores</h3>
+            <div class="player-list" id="reveal-scores"></div>
+          </div>
+
+          <!-- Host: next question -->
+          <div id="host-next-controls" class="hidden">
+            <button class="btn btn-primary btn-block" id="btn-next">Next Question &#8594;</button>
+          </div>
+          <div id="guest-next-waiting">
+            <p class="text-dim text-center" style="font-size:0.875rem;">Waiting for host to advance...</p>
+          </div>
+        </div>
+
+        <!-- ========== FINISHED ========== -->
+        <div class="screen" id="screen-finished">
+          <div class="winner-banner mb-lg fade-in">
+            <span class="winner-crown">&#127942;</span>
+            <p class="text-muted" style="font-size:0.875rem; text-transform:uppercase; letter-spacing:1px; margin-bottom:0.25rem;">Game Winner</p>
+            <h2 class="gold-text" id="game-winner-handle">—</h2>
+            <p class="text-muted mt-sm" id="game-winner-score"></p>
+          </div>
+
+          <div class="card mb-md">
+            <h3 class="mb-md">Final Standings</h3>
+            <div class="player-list" id="final-standings"></div>
+          </div>
+
+          <div style="display:flex; gap:0.75rem; flex-wrap:wrap;">
+            <a href="index.html" class="btn btn-primary">Play Again</a>
+            <a href="leaderboard.html" class="btn btn-secondary">View Leaderboard</a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <script type="module" src="js/game.js"></script>
+</body>
+</html>

@@ -1,0 +1,31 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users collection — open read/write (auth is handled in app)
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Questions — anyone can read, only admin writes (enforced in app)
+    match /questions/{questionId} {
+      allow read: if true;
+      allow write: if true;
+    }
+
+    // Game sessions — open for all approved players
+    match /games/{gameId} {
+      allow read, write: if true;
+    }
+
+    // Game results history
+    match /gameResults/{resultId} {
+      allow read, write: if true;
+    }
+
+    // App config (admin password hash, etc.)
+    match /config/{docId} {
+      allow read, write: if true;
+    }
+  }
+}

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Night — Admin</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="page">
+
+    <nav class="navbar">
+      <div class="navbar-inner">
+        <a href="index.html" class="navbar-brand">&#9733; Quiz Night</a>
+        <div class="navbar-user">
+          <span style="color:var(--gold); font-size:0.8rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px;">Admin Panel</span>
+          <button class="btn btn-secondary btn-sm" id="btn-admin-logout">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <main style="flex:1; padding: 2rem 0;">
+      <div class="container">
+
+        <!-- ========== ADMIN LOGIN ========== -->
+        <div class="screen active" id="screen-admin-login">
+          <div class="container-sm">
+            <div style="text-align:center; margin-bottom:2rem;">
+              <div style="font-size:2.5rem; margin-bottom:0.5rem;">&#128272;</div>
+              <h2>Admin Access</h2>
+              <p class="text-muted mt-sm">Enter your admin password to continue.</p>
+            </div>
+            <div class="card">
+              <div id="admin-login-alert"></div>
+              <div class="form-group">
+                <label class="form-label">Admin Password</label>
+                <input class="form-input" type="password" id="admin-password-input" placeholder="Password" />
+              </div>
+              <button class="btn btn-primary btn-block btn-lg" id="btn-admin-login">Enter Admin Panel</button>
+              <p class="text-dim text-center mt-md" style="font-size:0.8rem;">
+                First time? You'll be prompted to set a password.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== SET ADMIN PASSWORD (first time) ========== -->
+        <div class="screen" id="screen-set-password">
+          <div class="container-sm">
+            <div style="text-align:center; margin-bottom:2rem;">
+              <div style="font-size:2.5rem; margin-bottom:0.5rem;">&#128272;</div>
+              <h2>Set Admin Password</h2>
+              <p class="text-muted mt-sm">First-time setup. Choose a strong password — you can't recover it!</p>
+            </div>
+            <div class="card">
+              <div id="set-pw-alert"></div>
+              <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input class="form-input" type="password" id="new-admin-pw" placeholder="Choose a password" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Confirm Password</label>
+                <input class="form-input" type="password" id="confirm-admin-pw" placeholder="Confirm password" />
+              </div>
+              <button class="btn btn-primary btn-block btn-lg" id="btn-set-password">Set Password & Enter</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ========== ADMIN DASHBOARD ========== -->
+        <div class="screen" id="screen-admin-dash">
+
+          <div class="flex items-center justify-between mb-lg" style="flex-wrap:wrap; gap:0.75rem;">
+            <h2 class="gradient-text">Admin Dashboard</h2>
+            <div class="flex gap-sm" style="flex-wrap:wrap;">
+              <button class="btn btn-secondary btn-sm" id="btn-import-questions">&#8681; Import Default Questions</button>
+            </div>
+          </div>
+
+          <!-- Stats row -->
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:1rem; margin-bottom:2rem;">
+            <div class="card card-sm text-center">
+              <div style="font-size:2rem; font-weight:800; color:var(--accent-light);" id="stat-pending">—</div>
+              <div class="text-muted" style="font-size:0.8rem;">Pending Users</div>
+            </div>
+            <div class="card card-sm text-center">
+              <div style="font-size:2rem; font-weight:800; color:var(--success);" id="stat-approved">—</div>
+              <div class="text-muted" style="font-size:0.8rem;">Active Players</div>
+            </div>
+            <div class="card card-sm text-center">
+              <div style="font-size:2rem; font-weight:800; color:var(--cyan);" id="stat-questions">—</div>
+              <div class="text-muted" style="font-size:0.8rem;">Questions</div>
+            </div>
+            <div class="card card-sm text-center">
+              <div style="font-size:2rem; font-weight:800; color:var(--gold);" id="stat-games">—</div>
+              <div class="text-muted" style="font-size:0.8rem;">Games Played</div>
+            </div>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tabs mb-lg">
+            <button class="tab active" id="atab-users" onclick="switchAdminTab('users')">Users</button>
+            <button class="tab" id="atab-questions" onclick="switchAdminTab('questions')">Questions</button>
+            <button class="tab" id="atab-games" onclick="switchAdminTab('games')">Game History</button>
+          </div>
+
+          <!-- ---- Users Tab ---- -->
+          <div id="admin-tab-users">
+            <div id="admin-alert" class="mb-md"></div>
+
+            <!-- Pending approvals -->
+            <div class="mb-lg">
+              <h3 class="mb-md">
+                &#9888; Pending Approval
+                <span id="pending-count" class="badge badge-pending" style="margin-left:0.5rem;">0</span>
+              </h3>
+              <div id="pending-list">
+                <p class="text-dim" style="font-size:0.875rem;">No pending registrations.</p>
+              </div>
+            </div>
+
+            <!-- All users -->
+            <div>
+              <div class="flex items-center justify-between mb-md" style="flex-wrap:wrap; gap:0.5rem;">
+                <h3>All Users</h3>
+                <input class="form-input" type="search" id="user-search" placeholder="Search handle..." style="max-width:220px; padding:0.5rem 0.75rem;" />
+              </div>
+              <div class="card" style="overflow:auto;">
+                <table class="data-table" id="users-table">
+                  <thead>
+                    <tr>
+                      <th>Handle</th>
+                      <th>Status</th>
+                      <th>Games</th>
+                      <th>Total Score</th>
+                      <th>Wins</th>
+                      <th>Joined</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody id="users-tbody">
+                    <tr><td colspan="7" class="text-dim text-center" style="padding:2rem;">Loading users...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---- Questions Tab ---- -->
+          <div id="admin-tab-questions" class="hidden">
+            <div class="flex items-center justify-between mb-md" style="flex-wrap:wrap; gap:0.75rem;">
+              <h3>Question Bank</h3>
+              <button class="btn btn-primary btn-sm" id="btn-add-question">+ Add Question</button>
+            </div>
+
+            <!-- Filters -->
+            <div class="flex gap-sm mb-md" style="flex-wrap:wrap;">
+              <select class="form-select" id="q-filter-cat" style="max-width:160px; padding:0.5rem 0.75rem;">
+                <option value="">All Categories</option>
+                <option value="movies">Movies</option>
+                <option value="tv">TV Shows</option>
+                <option value="scifi">Sci-Fi</option>
+                <option value="fantasy">Fantasy</option>
+                <option value="general">General</option>
+              </select>
+              <select class="form-select" id="q-filter-diff" style="max-width:160px; padding:0.5rem 0.75rem;">
+                <option value="">All Difficulties</option>
+                <option value="easy">Easy</option>
+                <option value="medium">Medium</option>
+                <option value="hard">Hard</option>
+              </select>
+              <input class="form-input" type="search" id="q-search" placeholder="Search questions..." style="flex:1; min-width:180px; padding:0.5rem 0.75rem;" />
+            </div>
+
+            <div class="card" style="overflow:auto;">
+              <table class="data-table" id="questions-table">
+                <thead>
+                  <tr>
+                    <th>Question</th>
+                    <th>Category</th>
+                    <th>Difficulty</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="questions-tbody">
+                  <tr><td colspan="4" class="text-dim text-center" style="padding:2rem;">Loading questions...</td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="text-dim mt-sm" style="font-size:0.8rem;" id="q-count"></p>
+          </div>
+
+          <!-- ---- Game History Tab ---- -->
+          <div id="admin-tab-games" class="hidden">
+            <h3 class="mb-md">Recent Game History</h3>
+            <div id="game-history-list">
+              <p class="text-dim" style="font-size:0.875rem;">No games played yet.</p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Add/Edit Question Modal -->
+  <div class="modal-overlay hidden" id="question-modal">
+    <div class="modal">
+      <h3 class="modal-title" id="q-modal-title">Add Question</h3>
+      <div id="q-modal-alert"></div>
+
+      <div class="form-group">
+        <label class="form-label">Question</label>
+        <textarea class="form-input" id="q-text" rows="3" placeholder="Enter the question..."></textarea>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.75rem;">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="q-cat">
+            <option value="movies">Movies</option>
+            <option value="tv">TV Shows</option>
+            <option value="scifi">Sci-Fi</option>
+            <option value="fantasy">Fantasy</option>
+            <option value="general">General</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Difficulty</label>
+          <select class="form-select" id="q-diff">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Options (mark the correct one)</label>
+        <div style="display:flex; flex-direction:column; gap:0.5rem;" id="q-options">
+          <div class="flex items-center gap-sm">
+            <input type="radio" name="correct-opt" value="0" checked style="accent-color:var(--success);"/>
+            <input class="form-input q-opt" type="text" placeholder="Option A (correct)" data-idx="0" />
+          </div>
+          <div class="flex items-center gap-sm">
+            <input type="radio" name="correct-opt" value="1" style="accent-color:var(--success);"/>
+            <input class="form-input q-opt" type="text" placeholder="Option B" data-idx="1" />
+          </div>
+          <div class="flex items-center gap-sm">
+            <input type="radio" name="correct-opt" value="2" style="accent-color:var(--success);"/>
+            <input class="form-input q-opt" type="text" placeholder="Option C" data-idx="2" />
+          </div>
+          <div class="flex items-center gap-sm">
+            <input type="radio" name="correct-opt" value="3" style="accent-color:var(--success);"/>
+            <input class="form-input q-opt" type="text" placeholder="Option D" data-idx="3" />
+          </div>
+        </div>
+        <p class="text-dim mt-sm" style="font-size:0.75rem;">Select the radio button next to the correct answer.</p>
+      </div>
+
+      <input type="hidden" id="q-edit-id" />
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeQuestionModal()">Cancel</button>
+        <button class="btn btn-primary" id="btn-save-question">Save Question</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/admin.js"></script>
+  <script>
+    function switchAdminTab(tab) {
+      ['users','questions','games'].forEach(t => {
+        document.getElementById('atab-' + t).classList.toggle('active', t === tab);
+        document.getElementById('admin-tab-' + t).classList.toggle('hidden', t !== tab);
+      });
+    }
+
+    function closeQuestionModal() {
+      document.getElementById('question-modal').classList.add('hidden');
+    }
+  </script>
+</body>
+</html>

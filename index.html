@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Night</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="page">
+
+    <!-- Navbar (shown when logged in) -->
+    <nav class="navbar hidden" id="navbar">
+      <div class="navbar-inner">
+        <a href="index.html" class="navbar-brand">&#9733; Quiz Night</a>
+        <div class="navbar-user">
+          <div class="navbar-links">
+            <a href="leaderboard.html" class="nav-link">Leaderboard</a>
+          </div>
+          <span class="navbar-handle" id="nav-handle"></span>
+          <button class="btn btn-secondary btn-sm" id="btn-logout">Logout</button>
+        </div>
+      </div>
+    </nav>
+
+    <main style="flex:1; padding: 2rem 0;">
+
+      <!-- ========== AUTH SCREEN ========== -->
+      <div class="screen active" id="screen-auth">
+        <div class="container-sm">
+          <div style="text-align:center; margin-bottom: 2rem;">
+            <div style="font-size:3.5rem; margin-bottom:0.5rem;">&#9733;</div>
+            <h1 class="gradient-text">Quiz Night</h1>
+            <p class="text-muted mt-sm">Movies · TV Shows · Sci-Fi · Fantasy · General Knowledge</p>
+          </div>
+
+          <!-- Tabs -->
+          <div class="tabs">
+            <button class="tab active" id="tab-login" onclick="switchAuthTab('login')">Login</button>
+            <button class="tab" id="tab-register" onclick="switchAuthTab('register')">Register</button>
+          </div>
+
+          <!-- Login Form -->
+          <div class="card fade-in" id="form-login">
+            <div id="login-alert"></div>
+            <div class="form-group">
+              <label class="form-label">Handle</label>
+              <input class="form-input" type="text" id="login-handle" placeholder="Your handle" autocomplete="username" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input class="form-input" type="password" id="login-password" placeholder="Password" autocomplete="current-password" />
+            </div>
+            <button class="btn btn-primary btn-block btn-lg" id="btn-login">Login</button>
+            <p class="text-dim text-center mt-md" style="font-size:0.8rem;">
+              Need access? Register below — the admin will approve you.
+            </p>
+          </div>
+
+          <!-- Register Form -->
+          <div class="card fade-in hidden" id="form-register">
+            <div id="register-alert"></div>
+            <div class="form-group">
+              <label class="form-label">Choose a Handle</label>
+              <input class="form-input" type="text" id="reg-handle" placeholder="e.g. MovieMaster99" maxlength="20" autocomplete="username" />
+              <p class="text-dim" style="font-size:0.75rem; margin-top:0.35rem;">3–20 characters, letters and numbers only</p>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input class="form-input" type="password" id="reg-password" placeholder="Choose a password" autocomplete="new-password" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input class="form-input" type="password" id="reg-confirm" placeholder="Confirm password" autocomplete="new-password" />
+            </div>
+            <button class="btn btn-primary btn-block btn-lg" id="btn-register">Request Access</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== HOME SCREEN (logged in) ========== -->
+      <div class="screen" id="screen-home">
+        <div class="container">
+
+          <!-- Winner banners -->
+          <div id="winner-banners" class="mb-lg"></div>
+
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 600px; margin: 0 auto;">
+
+            <!-- Create Game -->
+            <div class="card card-glow" style="grid-column: 1 / -1;">
+              <h2 class="gradient-text mb-sm">&#9654; Host a Game</h2>
+              <p class="text-muted mb-lg" style="font-size:0.9rem;">Create a room and share the code with your friends.</p>
+
+              <div class="form-group">
+                <label class="form-label">Categories</label>
+                <div class="category-grid" id="category-grid">
+                  <div class="category-btn active" data-cat="movies" onclick="toggleCategory(this)">
+                    <span>&#127909;</span><span>Movies</span>
+                  </div>
+                  <div class="category-btn active" data-cat="tv" onclick="toggleCategory(this)">
+                    <span>&#128250;</span><span>TV Shows</span>
+                  </div>
+                  <div class="category-btn active" data-cat="scifi" onclick="toggleCategory(this)">
+                    <span>&#128640;</span><span>Sci-Fi</span>
+                  </div>
+                  <div class="category-btn active" data-cat="fantasy" onclick="toggleCategory(this)">
+                    <span>&#129411;</span><span>Fantasy</span>
+                  </div>
+                  <div class="category-btn active" data-cat="general" onclick="toggleCategory(this)">
+                    <span>&#129504;</span><span>General</span>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+                <div class="form-group">
+                  <label class="form-label">Questions</label>
+                  <select class="form-select" id="num-questions">
+                    <option value="10">10 questions</option>
+                    <option value="15" selected>15 questions</option>
+                    <option value="20">20 questions</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Difficulty</label>
+                  <select class="form-select" id="difficulty-mix">
+                    <option value="mixed" selected>Mixed</option>
+                    <option value="easy">Easy only</option>
+                    <option value="medium">Medium only</option>
+                    <option value="hard">Hard only</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Timer Mode</label>
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.5rem;">
+                  <label class="form-check checked" id="timer-30-label">
+                    <input type="radio" name="timer" value="30s" checked onchange="updateTimerLabel()" /> 30s per Q
+                  </label>
+                  <label class="form-check" id="timer-60-label">
+                    <input type="radio" name="timer" value="60s" onchange="updateTimerLabel()" /> 60s per Q
+                  </label>
+                  <label class="form-check" id="timer-vote-label">
+                    <input type="radio" name="timer" value="vote" onchange="updateTimerLabel()" /> Vote to skip
+                  </label>
+                </div>
+              </div>
+
+              <div id="create-alert"></div>
+              <button class="btn btn-primary btn-block btn-lg" id="btn-create">Create Game Room</button>
+            </div>
+
+            <!-- Join Game -->
+            <div class="card" style="grid-column: 1 / -1;">
+              <h2 class="mb-sm">&#128279; Join a Game</h2>
+              <p class="text-muted mb-md" style="font-size:0.9rem;">Enter the 6-character room code to join.</p>
+              <div style="display:flex; gap:0.75rem;">
+                <input class="form-input" type="text" id="join-code" placeholder="ROOM CODE" maxlength="6"
+                  style="text-transform:uppercase; letter-spacing:0.2em; font-size:1.1rem; font-weight:700; font-family:monospace; text-align:center;" />
+                <button class="btn btn-success" id="btn-join" style="white-space:nowrap;">Join Game</button>
+              </div>
+              <div id="join-alert" class="mt-sm"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script type="module" src="js/home.js"></script>
+  <script>
+    function switchAuthTab(tab) {
+      document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+      document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+      document.getElementById('form-login').classList.toggle('hidden', tab !== 'login');
+      document.getElementById('form-register').classList.toggle('hidden', tab === 'login');
+    }
+
+    function toggleCategory(el) {
+      el.classList.toggle('active');
+    }
+
+    function updateTimerLabel() {
+      ['30s', '60s', 'vote'].forEach(v => {
+        const label = document.getElementById('timer-' + v.replace('s','') + '-label');
+        if (!label) return;
+        const radio = label.querySelector('input');
+        label.classList.toggle('checked', radio && radio.checked);
+      });
+    }
+
+    // Enter key support
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Enter') {
+        const active = document.querySelector('.screen.active');
+        if (active && active.id === 'screen-auth') {
+          const loginVisible = !document.getElementById('form-login').classList.contains('hidden');
+          if (loginVisible) document.getElementById('btn-login').click();
+          else document.getElementById('btn-register').click();
+        }
+      }
+    });
+  </script>
+</body>
+</html>
