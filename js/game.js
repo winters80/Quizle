@@ -600,6 +600,15 @@ function subscribeToGame(code) {
         showScreen('screen-question');
         renderQuestion(game);
 
+        // Host: check if all players have answered → trigger reveal
+        if (isHost) {
+          const allAnswered = Object.values(game.players).every(p => p.answered);
+          if (allAnswered) {
+            doReveal(game);
+            break;
+          }
+        }
+
         // Check skip votes in vote mode (listener picks up changes)
         if (game.settings.timerMode === 'vote') {
           renderSkipVotes(game);
