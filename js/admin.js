@@ -5,7 +5,7 @@ import { db } from './config.js';
 import { collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import {
   getAdminConfig, setAdminPassword,
-  getAllUsers, updateUserStatus,
+  getAllUsers, updateUserStatus, deleteUser,
   getQuestions, addQuestion, updateQuestion, deleteQuestion, importQuestions,
   getGameResults
 } from './db.js';
@@ -157,6 +157,7 @@ function renderPendingUsers() {
       <div class="flex gap-sm">
         <button class="btn btn-success btn-sm" onclick="handleUserAction('${u.userId}', 'approved')">Approve</button>
         <button class="btn btn-danger btn-sm" onclick="handleUserAction('${u.userId}', 'rejected')">Reject</button>
+        <button class="btn btn-danger btn-sm" onclick="handleDeleteUser('${u.userId}', '${escHtml(u.handle)}')">Delete</button>
       </div>
     </div>`).join('');
 }
@@ -179,9 +180,12 @@ function renderUsersTable(users) {
       <td>${u.wins || 0}</td>
       <td class="text-dim" style="font-size:0.8rem;">${formatDate(u.createdAt)}</td>
       <td>
-        ${u.status !== 'approved' ? `<button class="btn btn-success btn-sm" style="margin-right:0.25rem;" onclick="handleUserAction('${u.userId}', 'approved')">Approve</button>` : ''}
-        ${u.status !== 'rejected' ? `<button class="btn btn-danger btn-sm" onclick="handleUserAction('${u.userId}', 'rejected')">Reject</button>` : ''}
-        ${u.status === 'rejected' ? `<button class="btn btn-secondary btn-sm" onclick="handleUserAction('${u.userId}', 'pending')">Re-review</button>` : ''}
+        <div class="flex gap-sm">
+          ${u.status !== 'approved' ? `<button class="btn btn-success btn-sm" onclick="handleUserAction('${u.userId}', 'approved')">Approve</button>` : ''}
+          ${u.status !== 'rejected' ? `<button class="btn btn-danger btn-sm" onclick="handleUserAction('${u.userId}', 'rejected')">Reject</button>` : ''}
+          ${u.status === 'rejected' ? `<button class="btn btn-secondary btn-sm" onclick="handleUserAction('${u.userId}', 'pending')">Re-review</button>` : ''}
+          <button class="btn btn-danger btn-sm" onclick="handleDeleteUser('${u.userId}', '${escHtml(u.handle)}')">Delete</button>
+        </div>
       </td>
     </tr>`).join('');
 }
@@ -196,6 +200,28 @@ window.handleUserAction = async (userId, newStatus) => {
   } catch (e) {
     showAlert('admin-alert', 'Error: ' + e.message, 'error');
   }
+};
+
+window.handleDeleteUser = async (userId, handle) => {
+  if (!confirm(`Permanently delete user "${handle}"? This cannot be undone.`)) return;
+  clearAlert('admin-alert');
+  try {
+    await deleteUser(userId);
+    showAlert('admin-alert', `User "${handle}" deleted.`, 'success');
+    await loadUsers();
+    loadStats();
+  } catch (e) {
+    showAlert('admin-alert', 'Error: ' + e.message, 'error');
+  }
+};
+
+window.handleRefresh = async () => {
+  const btn = document.getElementById('btn-refresh');
+  btn.textContent = 'Refreshing...';
+  btn.disabled = true;
+  await loadDashboard();
+  btn.textContent = '↻ Refresh';
+  btn.disabled = false;
 };
 
 // User search

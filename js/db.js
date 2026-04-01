@@ -19,6 +19,10 @@ export async function updateUserStatus(userId, status) {
   await updateDoc(doc(db, 'users', userId), { status });
 }
 
+export async function deleteUser(userId) {
+  await deleteDoc(doc(db, 'users', userId));
+}
+
 export async function updateUserStats(userId, scoreGained, won) {
   const userRef = doc(db, 'users', userId);
   const snap = await getDoc(userRef);
