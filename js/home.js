@@ -155,7 +155,8 @@ document.getElementById('btn-create').addEventListener('click', async () => {
       return;
     }
 
-    const gameId = await createGame(user.userId, user.handle, settings, questions);
+    const currentUser = getCurrentUser();
+    const gameId = await createGame(currentUser.userId, currentUser.handle, settings, questions);
     window.location.href = `game.html?code=${gameId}`;
   } catch (e) {
     console.error(e);
@@ -194,7 +195,8 @@ document.getElementById('btn-join').addEventListener('click', async () => {
       return;
     }
 
-    const result = await joinGame(game.id, user.userId, user.handle);
+    const currentUser = getCurrentUser();
+    const result = await joinGame(game.id, currentUser.userId, currentUser.handle);
     if (!result.ok) {
       showAlert('join-alert', result.error, 'error');
       btn.disabled = false;
