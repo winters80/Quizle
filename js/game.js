@@ -478,6 +478,7 @@ function renderReveal(game) {
   if (isHost) {
     ui.hostNextControls.classList.remove('hidden');
     ui.guestNextWaiting.classList.add('hidden');
+    ui.btnNext.disabled = false;
     ui.btnNext.textContent = isLast ? 'View Results' : 'Next Question →';
     ui.btnNext.onclick = () => handleNext(game, isLast);
   } else {
